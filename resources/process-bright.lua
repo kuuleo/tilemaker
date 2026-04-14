@@ -150,9 +150,9 @@ function node_function(node)
 	end
 
 	-- Write 'poi'
-	local rank, class, subclass = GetPOIRank(node)
+	local rank, class, subclass = GetPOIRank()
 	if rank then
-		WritePOI(node, class, subclass, rank)
+		WritePOI(class, subclass, rank)
 	end
 
 	-- Write 'mountain_peak' and 'water_name'
@@ -1057,9 +1057,9 @@ function way_function(way)
 	end
 
 	-- POIs ('poi' and 'poi_detail')
-	local rank, class, subclass = GetPOIRank(way)
+	local rank, class, subclass = GetPOIRank()
 	if rank then
-		WritePOI(way, class, subclass, rank)
+		WritePOI(class, subclass, rank)
 		return
 	end
 
