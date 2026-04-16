@@ -881,7 +881,7 @@ function way_function()
 	if aeroway ~= "" then
 		-- Use the correct function based on whether it's a polygon or a line
 		if isClosed then
-			LayerAsArea("aeroway")
+			Layer("aeroway")
 		else
 			Layer("aeroway")
 		end
