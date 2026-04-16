@@ -70,7 +70,7 @@ function node_function(node)
 	-- Write 'aerodrome_label'
 	local aeroway = Find("aeroway")
 	if aeroway == "aerodrome" then
-		Layer("aerodrome_label", false)
+		Layer("aerodrome_label")
 		SetNameAttributes(node)
 		Attribute("iata", Find("iata"))
 		SetEleAttributes(node)
@@ -88,7 +88,7 @@ function node_function(node)
 	-- Write 'housenumber'
 	local housenumber = Find("addr:housenumber")
 	if housenumber ~= "" then
-		Layer("housenumber", false)
+		Layer("housenumber")
 		Attribute("housenumber", housenumber)
 	end
 
@@ -136,7 +136,7 @@ function node_function(node)
 			mz = 13
 		end
 
-		Layer("place", false)
+		Layer("place")
 		Attribute("class", place)
 		MinZoom(mz)
 		if rank then
@@ -158,7 +158,7 @@ function node_function(node)
 	-- Write 'mountain_peak' and 'water_name'
 	local natural = Find("natural")
 	if natural == "peak" or natural == "volcano" then
-		Layer("mountain_peak", false)
+		Layer("mountain_peak")
 		SetEleAttributes(node)
 		AttributeNumeric("rank", 1)
 		Attribute("class", natural)
@@ -166,7 +166,7 @@ function node_function(node)
 		return
 	end
 	if natural == "bay" then
-		Layer("water_name", false)
+		Layer("water_name")
 		SetNameAttributes(node)
 		return
 	end
@@ -707,7 +707,7 @@ function way_function()
 			mz = 12
 		end
 
-		Layer("boundary", false)
+		Layer("boundary")
 		AttributeNumeric("admin_level", admin_level)
 		MinZoom(mz)
 		-- disputed status (0 or 1). some styles need to have the 0 to show it.
@@ -786,7 +786,7 @@ function way_function()
 
 		-- Write to layer
 		if minzoom <= 14 then
-			Layer(layer, false)
+			Layer(layer)
 			MinZoom(minzoom)
 			SetZOrder()
 			Attribute("class", h)
@@ -813,13 +813,13 @@ function way_function()
 				minzoom = 8
 			end
 			if highway == "motorway" or highway == "trunk" then
-				Layer("transportation_name", false)
+				Layer("transportation_name")
 				MinZoom(minzoom)
 			elseif h == "minor" or h == "track" or h == "path" or h == "service" then
-				Layer("transportation_name_detail", false)
+				Layer("transportation_name_detail")
 				MinZoom(minzoom)
 			else
-				Layer("transportation_name_mid", false)
+				Layer("transportation_name_mid")
 				MinZoom(minzoom)
 			end
 			SetNameAttributes()
@@ -838,7 +838,7 @@ function way_function()
 
 	-- Railways ('transportation' and 'transportation_name', plus 'transportation_name_detail')
 	if railway ~= "" then
-		Layer("transportation", false)
+		Layer("transportation") -- Keep this! Just remove the ", false"
 		Attribute("class", railway)
 		SetZOrder()
 		SetBrunnelAttributes()
@@ -849,7 +849,7 @@ function way_function()
 			MinZoom(9)
 		end
 
-		Layer("transportation_name", false)
+		Layer("transportation_name") -- Keep this! Just remove the ", false"
 		SetNameAttributes()
 		MinZoom(14)
 		Attribute("class", "rail")
@@ -857,7 +857,7 @@ function way_function()
 
 	-- Pier
 	if man_made == "pier" then
-		Layer("transportation", isClosed)
+		Layer("transportation")
 		SetZOrder()
 		Attribute("class", "pier")
 		SetMinZoomByArea()
@@ -865,13 +865,13 @@ function way_function()
 
 	-- 'Ferry'
 	if route == "ferry" then
-		Layer("transportation", false)
+		Layer("transportation")
 		Attribute("class", "ferry")
 		SetZOrder()
 		MinZoom(9)
 		SetBrunnelAttributes()
 
-		Layer("transportation_name", false)
+		Layer("transportation_name")
 		SetNameAttributes()
 		MinZoom(12)
 		Attribute("class", "ferry")
@@ -879,7 +879,13 @@ function way_function()
 
 	-- 'Aeroway'
 	if aeroway ~= "" then
-		Layer("aeroway", isClosed)
+		-- Use the correct function based on whether it's a polygon or a line
+		if isClosed then
+			LayerAsArea("aeroway")
+		else
+			Layer("aeroway")
+		end
+
 		Attribute("class", aeroway)
 		Attribute("ref", Find("ref"))
 		write_name = true
@@ -906,35 +912,33 @@ function way_function()
 	-- Set 'waterway' and associated
 	if waterwayClasses[waterway] and not isClosed then
 		if waterway == "river" and Holds("name") then
-			Layer("waterway", false)
+			Layer("waterway")
 		else
-			Layer("waterway_detail", false)
+			Layer("waterway_detail")
 		end
-		if Find("intermittent") == "yes" then
-			AttributeNumeric("intermittent", 1)
-		else
-			AttributeNumeric("intermittent", 0)
-		end
+		-- Simplified boolean to number logic
+		AttributeNumeric("intermittent", Find("intermittent") == "yes" and 1 or 0)
 		Attribute("class", waterway)
 		SetNameAttributes()
 		SetBrunnelAttributes()
 	elseif waterway == "boatyard" then
-		Layer("landuse", isClosed)
+		Layer("landuse") -- Removed isClosed
 		Attribute("class", "industrial")
 		MinZoom(12)
 	elseif waterway == "dam" then
-		Layer("building", isClosed)
+		Layer("building") -- Removed isClosed
 	elseif waterway == "fuel" then
-		Layer("landuse", isClosed)
+		Layer("landuse") -- Removed isClosed
 		Attribute("class", "industrial")
 		MinZoom(14)
 	end
+
 	-- Set names on rivers
 	if waterwayClasses[waterway] and not isClosed then
 		if waterway == "river" and Holds("name") then
-			Layer("water_name", false)
+			Layer("water_name")
 		else
-			Layer("water_name_detail", false)
+			Layer("water_name_detail")
 			MinZoom(14)
 		end
 		Attribute("class", waterway)
@@ -943,14 +947,14 @@ function way_function()
 
 	-- Set 'building' and associated
 	if building ~= "" then
-		Layer("building", true)
+		Layer("building")
 		SetBuildingHeightAttributes()
 		SetMinZoomByArea()
 	end
 
 	-- Set 'housenumber'
 	if housenumber ~= "" then
-		LayerAsCentroid("housenumber", false)
+		LayerAsCentroid("housenumber")
 		Attribute("housenumber", housenumber)
 	end
 
@@ -978,7 +982,7 @@ function way_function()
 		if class == "ocean" and isClosed and (AreaIntersecting("ocean") / Area() > 0.98) then
 			return
 		end
-		Layer("water", true)
+		Layer("water")
 		SetMinZoomByArea()
 		Attribute("class", class)
 
@@ -1010,7 +1014,7 @@ function way_function()
 		l = leisure
 	end
 	if landcoverKeys[l] then
-		Layer("landcover", true)
+		Layer("landcover")
 		SetMinZoomByArea()
 		Attribute("class", landcoverKeys[l])
 		if l == "wetland" then
@@ -1029,7 +1033,7 @@ function way_function()
 			l = tourism
 		end
 		if landuseKeys[l] then
-			Layer("landuse", true)
+			Layer("landuse")
 			Attribute("class", l)
 			if l == "residential" then
 				if Area() < ZRES8 ^ 2 then
@@ -1047,11 +1051,11 @@ function way_function()
 	-- Parks
 	-- **** name?
 	if boundary == "national_park" then
-		Layer("park", true)
+		Layer("park")
 		Attribute("class", boundary)
 		SetNameAttributes()
 	elseif leisure == "nature_reserve" then
-		Layer("park", true)
+		Layer("park")
 		Attribute("class", leisure)
 		SetNameAttributes()
 	end
