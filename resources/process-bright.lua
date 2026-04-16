@@ -893,7 +893,7 @@ function way_function()
 
 	-- 'aerodrome_label'
 	if aeroway == "aerodrome" then
-		LayerAsCentroid("aerodrome_label")
+		Layer("aerodrome_label")
 		SetNameAttributes()
 		Attribute("iata", Find("iata"))
 		SetEleAttributes()
@@ -954,7 +954,7 @@ function way_function()
 
 	-- Set 'housenumber'
 	if housenumber ~= "" then
-		LayerAsCentroid("housenumber")
+		Layer("housenumber")
 		Attribute("housenumber", housenumber)
 	end
 
@@ -996,7 +996,7 @@ function way_function()
 		--  https://www.openstreetmap.org/way/25309134
 		--  https://www.openstreetmap.org/way/24579306
 		if Holds("name") and natural == "water" and water ~= "basin" and water ~= "wastewater" then
-			LayerAsCentroid("water_name_detail")
+			Layer("water_name_detail")
 			SetNameAttributes()
 			SetMinZoomByArea()
 			Attribute("class", class)
@@ -1069,7 +1069,7 @@ function way_function()
 
 	-- Catch-all
 	if (building ~= "" or write_name) and Holds("name") then
-		LayerAsCentroid("poi_detail")
+		Layer("poi_detail")
 		SetNameAttributes()
 		if write_name then
 			rank = 6
@@ -1102,7 +1102,7 @@ function WritePOI(class, subclass, rank)
 	if rank > 4 then
 		layer = "poi_detail"
 	end
-	LayerAsCentroid(layer)
+	Layer(layer)
 	SetNameAttributes()
 	AttributeNumeric("rank", rank)
 	Attribute("class", class)
