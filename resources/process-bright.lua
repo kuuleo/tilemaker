@@ -1035,14 +1035,16 @@ function way_function()
 		if landuseKeys[l] then
 			Layer("landuse")
 			Attribute("class", l)
+
+			-- This uses your new logic with the ZRES13 "safety valve"
+			SetMinZoomByArea()
+
+			-- Special logic for residential (prevents grey "noise" at low zooms)
 			if l == "residential" then
-				if Area() < ZRES8 ^ 2 then
-					MinZoom(8)
-				else
-					SetMinZoomByArea()
+				-- This forces residential to wait until at least zoom 12
+				if GetZoom() < 12 then
+					MinZoom(12)
 				end
-			else
-				MinZoom(11)
 			end
 			write_name = true
 		end
@@ -1177,8 +1179,10 @@ function SetMinZoomByArea()
 		MinZoom(12)
 	elseif area > ZRES12 ^ 2 then
 		MinZoom(13)
-	else
+	elseif area > ZRES13 ^ 2 then -- Added one more threshold
 		MinZoom(14)
+	else
+		MinZoom(15) -- This hides tiny objects from the heavy Z14 tiles
 	end
 end
 
