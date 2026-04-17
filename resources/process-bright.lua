@@ -1161,6 +1161,12 @@ end
 -- Set minimum zoom level by area
 function SetMinZoomByArea()
 	local area = Area()
+	-- SAFETY CHECK: If area is missing, zero, or negative (malformed data),
+	-- assign to a high zoom and exit immediately to prevent Status 136.
+	if not area or area <= 0 then
+		MinZoom(14)
+		return
+	end
 	if area > ZRES5 ^ 2 then
 		MinZoom(6)
 	elseif area > ZRES6 ^ 2 then
