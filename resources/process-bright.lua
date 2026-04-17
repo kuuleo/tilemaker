@@ -1042,9 +1042,7 @@ function way_function()
 			-- Special logic for residential (prevents grey "noise" at low zooms)
 			if l == "residential" then
 				-- This forces residential to wait until at least zoom 12
-				if GetZoom() < 12 then
-					MinZoom(12)
-				end
+				MinZoom(12)
 			end
 			write_name = true
 		end
