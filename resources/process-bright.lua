@@ -170,6 +170,15 @@ function node_function(node)
 		SetNameAttributes(node)
 		return
 	end
+	-- INSERT YOUR NEW OCEAN CODE HERE:
+	local place = Find("place")
+	if place == "ocean" or place == "sea" then
+		Layer("water_name", false)
+		SetNameAttributes(node) -- This automatically sets name:latin and other name fields!
+		Attribute("class", place) -- Keeps the OMT schema standard class
+		MinZoom(2)
+		return
+	end
 end
 
 -- Process way tags
@@ -650,6 +659,16 @@ function way_function()
 	local write_name = false
 	local construction = Find("construction")
 
+	-- get water names to show
+	if natural == "water" or waterway ~= "" then
+		local name = Find("name")
+		if name ~= "" then
+			Layer("water_name", false)
+			Attribute("name:latin", name)
+			-- Allow names to appear much earlier (Zoom 9) instead of Zoom 14
+			MinZoom(9)
+		end
+	end
 	-- Miscellaneous preprocessing
 	if Find("disused") == "yes" then
 		return
