@@ -67,6 +67,20 @@ node_keys = {
 	"waterway",
 }
 function node_function(node)
+	-- 1. PLACED AT THE VERY TOP: INTERCEPT OCEANS AND SEAS IMMEDIATELY
+	local place_val = Find("place")
+	if place_val == "" and node then
+		place_val = node:Find("place")
+	end
+
+	if place_val == "ocean" or place_val == "sea" then
+		Layer("water_name", false)
+		SetNameAttributes(node)
+		Attribute("class", place_val)
+		MinZoom(2)
+		return -- Clean exit into water_name
+	end
+
 	-- Write 'aerodrome_label'
 	local aeroway = Find("aeroway")
 	if aeroway == "aerodrome" then
@@ -85,6 +99,7 @@ function node_function(node)
 		end
 		Attribute("class", class)
 	end
+
 	-- Write 'housenumber'
 	local housenumber = Find("addr:housenumber")
 	if housenumber ~= "" then
@@ -168,15 +183,6 @@ function node_function(node)
 	if natural == "bay" then
 		Layer("water_name")
 		SetNameAttributes(node)
-		return
-	end
-	-- INSERT YOUR NEW OCEAN CODE HERE:
-	local place = Find("place")
-	if place == "ocean" or place == "sea" then
-		Layer("water_name", false)
-		SetNameAttributes(node) -- This automatically sets name:latin and other name fields!
-		Attribute("class", place) -- Keeps the OMT schema standard class
-		MinZoom(2)
 		return
 	end
 end
